@@ -42,7 +42,7 @@ int *p2DigitValtmp[4] = {&p2n0tmp, &p2n1tmp, &p2n2tmp, &p2n3tmp};
 
 /**Codice Gaia**/
 // PARAMETRI PER ILIF:
-long goBackSteps = 200;     // !!!! (iniziale) numero di step di cui torna indietro dopo che tocca un endStop; CONTIENE ANCHE UN BACKLASH post-endstop
+long goBackSteps = 200;     // number of steps to go back after an endstop is encountered
 int pos45steps = -1490;
 int endStop = 0;
 
@@ -136,18 +136,18 @@ void setup() {
     steppers.addStepper(stepper1);
   }
   {  //pinMode
-    pinMode(endStopPin1, INPUT);      // !! modo migliore per connessione tra 5V e GND, per gli optical endstops. Meglio di INPUT_PULLUP
+    pinMode(endStopPin1, INPUT);
     pinMode(endStopPin2, INPUT);
     pinMode(switchUpPin, INPUT_PULLUP);
     pinMode(switchDownPin, INPUT_PULLUP);
     pinMode(switchHomePin, INPUT_PULLUP);
     //pinMode(displayEnable, INPUT_PULLUP);
     pinMode(triggerOutPin, INPUT_PULLUP);
-    pinMode(initFindZeroPin, LOW);  // !! cambio; inizialmente INPUT_PULLUP --> se no non mi entra nel setup dello zero
+    pinMode(initFindZeroPin, LOW);
     pinMode(enPin1, OUTPUT);
   }
   delay(1000);
-  // initZero!! Procedura di setup per trovare lo zero all'accensione
+  // initZero: procedura di setup per trovare lo zero all'accensione
   if (digitalRead(initFindZeroPin) == LOW) {
     digitalWrite(enPin1, LOW);
     if (endStopPin1 == HIGH) {
@@ -367,13 +367,14 @@ void loop() {   // put your main code here, to run repeatedly:
 
           break;
 
-          //"laser" e "lamp" impostano solo il numero; il movimento lo fa "ok"
+          //!! aggiungere case "laser" e "lamp"
+          // impostano solo il numero (rispettivamente, step=1470 e step=0); il movimento (assoluto) lo dà "ok"
         }
       break; // end page 2
 
   /*************************PAGE 3************************************/
       case 3:
-      //swicth(msg[2])
+      //swicth(msg[2])      //!! aggiungere
       //{
       // case 1:
       // break; 
@@ -449,6 +450,9 @@ void executeString(int numMot, char enable, int step){
   //       pStepper->moveTo(currPosTmp + step);
   //     }
   //   break;
+  //   case 'p':  // save current position as default "laser" position
+  //      pos45steps = pStepper->currentPosition();
+  //   break;
   //   // case 's': // setup procedure
   //   //   ...
   //   //   break;
@@ -508,6 +512,12 @@ void executeString(int numMot, char enable, int step){
   //       // Serial.println("ENDSTOP 1");
   //       pStepper->runToNewPosition(pStepper->currentPosition() - goBackSteps);    // - bc of sign convention; goes clockwise
   //       pStepper->setCurrentPosition(0);
+  //       //print currentPos on Nextion
+  //       Serial.print("p[0].n2.val=");
+  //       Serial.print(pStepper->currentPosition());
+  //       Serial.write(0xFF);
+  //       Serial.write(0xFF);
+  //       Serial.write(0xFF);
   //       //delay(100);
   //       break;
   //     }
@@ -516,6 +526,12 @@ void executeString(int numMot, char enable, int step){
   //       pStepper->stop();
   //       // Serial.println("ENDSTOP 2");
   //       pStepper->runToNewPosition(pStepper->currentPosition() + goBackSteps);
+  //       //print currentPos on Nextion
+  //       Serial.print("p[0].n2.val=");
+  //       Serial.print(pStepper->currentPosition());
+  //       Serial.write(0xFF);
+  //       Serial.write(0xFF);
+  //       Serial.write(0xFF);
   //       break;
   //       // at this point, we do NOT know the position with absolute confidence, due to non-null backlash between the gears!
   //     }
@@ -524,7 +540,7 @@ void executeString(int numMot, char enable, int step){
   //   pStepper->run();
   // }
 
-  // //print currentPos on Nextion constantly
+  // //print currentPos on Nextion
   // Serial.print("p[0].n2.val=");
   // Serial.print(pStepper->currentPosition());
   // Serial.write(0xFF);
