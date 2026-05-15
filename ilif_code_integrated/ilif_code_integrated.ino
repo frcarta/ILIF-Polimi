@@ -128,14 +128,17 @@ void setup() {
   Serial.begin(9600);
 
   /* setup Gaia*/
+  Serial.println("setTimeout");
   Serial.setTimeout(1000);      //10
-  {                              //stepper settings
+
+   //stepper settings
+    Serial.println("settings of stepper motors");
     stepper1.setMaxSpeed(2000);  //5000
     stepper1.setSpeed(1000);  //5000
     stepper1.setAcceleration(300000);
     steppers.addStepper(stepper1);
-  }
-  {  //pinMode
+
+   //pinMode
     pinMode(endStopPin1, INPUT);
     pinMode(endStopPin2, INPUT);
     pinMode(switchUpPin, INPUT_PULLUP);
@@ -145,30 +148,30 @@ void setup() {
     pinMode(triggerOutPin, INPUT_PULLUP);
     pinMode(initFindZeroPin, LOW);
     pinMode(enPin1, OUTPUT);
-  }
-  delay(1000);
-  // initZero: procedura di setup per trovare lo zero all'accensione
-  if (digitalRead(initFindZeroPin) == LOW) {
-    digitalWrite(enPin1, LOW);
-    if (endStopPin1 == HIGH) {
-      stepper1.runToNewPosition(-500);
-    } else if (endStopPin2 == HIGH) {
-      stepper1.runToNewPosition(500);
-    } if (GoToEndstop(stepper1, 2) == 0 || GoToEndstop(stepper1, 1) == 0) {
-        Serial.println("ERRORE NEL TROVARE LO ZERO. POSSIBILE MALFUNZIONAMENTO DEGLI ENDSTOP. PROCEDERE CON CAUTELA.");
-      }
-    delay(300);
-    Serial.println("initZero");
-    Serial.println(" ");
-    pinMode(initFindZeroPin, INPUT_PULLUP);   // cambio; "ora hai trovato lo zero iniziale"
-  } else {
-    digitalWrite(enPin1, HIGH);
-  }  //disable driver
+  //
+  // delay(1000);
+  // // initZero: procedura di setup per trovare lo zero all'accensione
+  // if (digitalRead(initFindZeroPin) == LOW) {
+  //   digitalWrite(enPin1, LOW);
+  //   if (endStopPin1 == HIGH) {
+  //     stepper1.runToNewPosition(-500);
+  //   } else if (endStopPin2 == HIGH) {
+  //     stepper1.runToNewPosition(500);
+  //   } if (GoToEndstop(stepper1, 2) == 0 || GoToEndstop(stepper1, 1) == 0) {
+  //       //Serial.println("ERRORE NEL TROVARE LO ZERO. POSSIBILE MALFUNZIONAMENTO DEGLI ENDSTOP. PROCEDERE CON CAUTELA.");
+  //     }
+  //   delay(300);
+  //   // Serial.println("initZero");
+  //   // Serial.println(" ");
+  //   pinMode(initFindZeroPin, INPUT_PULLUP);   // cambio; "ora hai trovato lo zero iniziale"
+  // } else {
+  //   digitalWrite(enPin1, HIGH);
+  // }  //disable driver
 
 }
 
 void loop() {   // put your main code here, to run repeatedly:
-  if (Serial.available() >=7){ // check repeatedly Serial
+  if (Serial.available() ==  7){ // check repeatedly Serial
     for (int k = 0; k<7; k++){
       msg[k] = Serial.read();
     }
@@ -550,31 +553,31 @@ void executeString(int numMot, char enable, int step){
 } //end of function executeString
 
 
-// GoToEndstop
-int GoToEndstop(AccelStepper stepper, int endStop) {
-  digitalWrite(enPin1, LOW);                                            //enable motor driver
-  if (endStop == 1)
-    stepper.move(MAXRANGE);                                             //set movement target and distanceToGo attribute
-  else if (endStop == 2)
-    stepper.move(-MAXRANGE);
+// // GoToEndstop
+// int GoToEndstop(AccelStepper stepper, int endStop) {
+//   digitalWrite(enPin1, LOW);                                            //enable motor driver
+//   if (endStop == 1)
+//     stepper.move(MAXRANGE);                                             //set movement target and distanceToGo attribute
+//   else if (endStop == 2)
+//     stepper.move(-MAXRANGE);
 
-  while (stepper.distanceToGo() != 0) {           // while no endstop encountered and maxSteps not reached
-    if (digitalRead(endStopPin1) == HIGH) {  // endstop 1 encountered
-      stepper.stop();
-      stepper.runToNewPosition(stepper.currentPosition() - goBackSteps);
-      break;
-    }
-    if (digitalRead(endStopPin2) == HIGH) {     // endstop 2 encountered
-      stepper.stop();
-      stepper.runToNewPosition(stepper.currentPosition() + goBackSteps);
-      break;
-    }
-  }
-  stepper.run();  //run movement
+//   while (stepper.distanceToGo() != 0) {           // while no endstop encountered and maxSteps not reached
+//     if (digitalRead(endStopPin1) == HIGH) {  // endstop 1 encountered
+//       stepper.stop();
+//       stepper.runToNewPosition(stepper.currentPosition() - goBackSteps);
+//       break;
+//     }
+//     if (digitalRead(endStopPin2) == HIGH) {     // endstop 2 encountered
+//       stepper.stop();
+//       stepper.runToNewPosition(stepper.currentPosition() + goBackSteps);
+//       break;
+//     }
+//   }
+//   stepper.run();  //run movement
   
-  if (stepper.distanceToGo() != 0) {
-    return 1;  // endostop 1 or 2 found
-  } else {
-    return 0;  // Error - endstop not found
-  }
-}
+//   if (stepper.distanceToGo() != 0) {
+//     return 1;  // endostop 1 or 2 found
+//   } else {
+//     return 0;  // Error - endstop not found
+//   }
+// }
